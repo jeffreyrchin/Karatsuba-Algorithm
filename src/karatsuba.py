@@ -10,7 +10,7 @@ def karatsuba(x, y):
     
     # Base case:
     if n < 10:
-       return x * y
+       return sign * x * y
 
     # Calculate the split position:
     m = n // 2
@@ -28,3 +28,10 @@ def karatsuba(x, y):
 
     # Combine z1, z2, and z3 using the general Karatsuba formula:
     return sign * ((z3 * 10**(2 * m)) + ((z2 - z3 - z1) * 10**m) + z1)
+ 
+# Command-line interface:
+import sys
+if __name__ == "__main__":
+    x = int(sys.argv[1])
+    y = int(sys.argv[2])
+    print(karatsuba(x, y))

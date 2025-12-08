@@ -30,3 +30,10 @@ def naive_multiply(x, y):
     # Convert result array to an integer
     result = int("".join(str(d) for d in reversed(res)))
     return sign * result
+
+# Command-line interface:
+import sys
+if __name__ == "__main__":
+    x = int(sys.argv[1])
+    y = int(sys.argv[2])
+    print(naive_multiply(x, y))
