@@ -94,7 +94,7 @@ def test_karatsuba():
     for i, (a, b) in enumerate(tests, 1):
         expected = a * b
         result = karatsuba(a, b)
-        status = "✓ PASS" if result == expected else "✗ FAIL"
+        status = "PASS" if result == expected else "FAIL"
         
         if result == expected:
             passed += 1
