@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karatsuba Algorithm - Complete Visualization</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #666; font-size: 1.2em; }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .full-width { grid-column: 1 / -1; }
+        h2 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        h3 { color: #667eea; margin-top: 20px; margin-bottom: 10px; }
+        .input-section { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        input[type="number"] {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+        input[type="number"]:focus { outline: none; border-color: #667eea; }
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .chart-container {
+            background: #1F2937;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+        }
+        #comparisonChart { display: block; }
+        .tooltip {
+            position: absolute;
+            background: #374151;
+            border: 1px solid #4B5563;
+            border-radius: 8px;
+            padding: 10px 15px;
+            pointer-events: none;
+            display: none;
+            font-size: 14px;
+            color: white;
+            z-index: 100;
+        }
+        .legend { display: flex; justify-content: center; gap: 30px; margin-top: 15px; color: white; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .legend-color { width: 20px; height: 4px; border-radius: 2px; }
+        .complexity-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .complexity-card {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .complexity-card:hover { transform: translateY(-5px); }
+        .complexity-card h4 { margin-bottom: 10px; }
+        .complexity-card .big-o { font-size: 1.5em; font-weight: bold; }
+        .algorithm-steps { background: #f7fafc; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .step {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .formula {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1em;
+            margin: 15px 0;
+            border: 2px solid #e2e8f0;
+        }
+        .result-box {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .visualization {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            min-height: 150px;
+        }
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .example-card {
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .example-card:hover { background: #e2e8f0; transform: translateY(-3px); }
+        .highlight {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .info-card-green { background: #e6fffa; padding: 20px; border-radius: 10px; }
+        .info-card-green h3 { color: #38a169; margin-top: 0; }
+        .info-card-red { background: #fff5f5; padding: 20px; border-radius: 10px; }
+        .info-card-red h3 { color: #e53e3e; margin-top: 0; }
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            font-size: 0.9em;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .footer-note span { color: #48bb78; font-weight: bold; }
+        @media (max-width: 768px) {
+            .main-content, .info-cards { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Karatsuba Algorithm</h1>
+            <p class="subtitle">Fast Integer Multiplication using Divide & Conquer</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Introduction -->
+            <div class="card full-width">
+                <h2>📚 Introduction</h2>
+                <p>The Karatsuba algorithm is a fast multiplication algorithm discovered by Anatoly Karatsuba in 1960. It reduces the multiplication of two n-digit numbers to three multiplications of n/2-digit numbers, improving the time complexity from O(n²) to O(n^1.585).</p>
+                <h3>Why is Integer Multiplication Important?</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>🔐 <strong>Cryptography:</strong> RSA encryption uses multiplication of huge prime numbers</li>
+                    <li>🧮 <strong>Scientific Computing:</strong> High-precision calculations</li>
+                    <li>💰 <strong>Financial Systems:</strong> Precise calculations for banking</li>
+                    <li>📊 <strong>Big Data:</strong> Processing large-scale numerical datasets</li>
+                </ul>
+            </div>
+
+            <!-- Interactive Calculator -->
+            <div class="card">
+                <h2>🧮 Interactive Calculator</h2>
+                <div class="input-section">
+                    <input type="number" id="num1" placeholder="First number" value="1234">
+                    <input type="number" id="num2" placeholder="Second number" value="5678">
+                    <button onclick="calculateAndVisualize()">Calculate</button>
+                </div>
+                <div id="calculationResult"></div>
+                <div id="stepVisualization" class="visualization"></div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="card">
+                <h2>⚙️ How It Works</h2>
+                <div class="algorithm-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <strong>Split:</strong> Divide each number into two halves
+                        <div class="formula">x = x₁ × 10^(n/2) + x₀</div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <strong>Three Multiplications:</strong>
+                        <div class="formula">z₂ = x₁×y₁, z₀ = x₀×y₀<br>z₁ = (x₁+x₀)×(y₁+y₀) - z₂ - z₀</div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <strong>Combine:</strong>
+                        <div class="formula">Result = z₂×10^n + z₁×10^(n/2) + z₀</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Runtime Comparison Graph -->
+            <div class="card full-width">
+                <h2>📈 Runtime Complexity Comparison</h2>
+                <div class="chart-container">
+                    <canvas id="comparisonChart" width="850" height="350"></canvas>
+                    <div class="tooltip" id="tooltip"></div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #EF4444;"></div>
+                            <span>Standard O(n²)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #10B981;"></div>
+                            <span>Karatsuba O(n^1.585)</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="footer-note">At n=50 digits, Karatsuba is approximately <span>6x faster</span> than standard multiplication</p>
+            </div>
+
+            <!-- Algorithm Comparison Cards -->
+            <div class="card full-width">
+                <h2>📊 Algorithm Comparison</h2>
+                <div class="complexity-comparison">
+                    <div class="complexity-card">
+                        <h4>Traditional</h4>
+                        <div class="big-o">O(n²)</div>
+                        <p>Grade-school method</p>
+                    </div>
+                    <div class="complexity-card">
+                        <h4>Karatsuba</h4>
+                        <div class="big-o">O(n^1.585)</div>
+                        <p>Divide & Conquer</p>
+                    </div>
+                    <div class="complexity-card">
+                        <h4>Toom-Cook</h4>
+                        <div class="big-o">O(n^1.465)</div>
+                        <p>Generalized Karatsuba</p>
+                    </div>
+                    <div class="complexity-card">
+                        <h4>Schönhage-Strassen</h4>
+                        <div class="big-o">O(n log n log log n)</div>
+                        <p>FFT-based</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advantages & Considerations -->
+            <div class="card full-width">
+                <h2>🔍 Analysis</h2>
+                <div class="info-cards">
+                    <div class="info-card-green">
+                        <h3>✅ Advantages</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>Faster for large numbers (>100 digits)</li>
+                            <li>Reduces multiplications from 4 to 3</li>
+                            <li>Can be parallelized effectively</li>
+                            <li>Foundation for faster algorithms</li>
+                        </ul>
+                    </div>
+                    <div class="info-card-red">
+                        <h3>⚠️ Considerations</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>Overhead for small numbers</li>
+                            <li>More additions/subtractions</li>
+                            <li>Memory for recursive calls</li>
+                            <li>Not as fast as FFT for huge numbers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practice Examples -->
+            <div class="card full-width">
+                <h2>🔢 Practice Examples</h2>
+                <div class="example-grid">
+                    <div class="example-card" onclick="loadExample('12', '34')">
+                        <strong>Simple:</strong> 12 × 34
+                    </div>
+                    <div class="example-card" onclick="loadExample('1234', '5678')">
+                        <strong>Medium:</strong> 1234 × 5678
+                    </div>
+                    <div class="example-card" onclick="loadExample('123456', '789012')">
+                        <strong>Large:</strong> 123456 × 789012
+                    </div>
+                    <div class="example-card" onclick="loadExample('9876543210', '1234567890')">
+                        <strong>Huge:</strong> 9876543210 × 1234567890
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Karatsuba Algorithm
+        function karatsuba(x, y) {
+            if (x < 10 || y < 10) return x * y;
+            const n = Math.max(x.toString().length, y.toString().length);
+            const nHalf = Math.floor(n / 2);
+            const split = Math.pow(10, nHalf);
+            const x1 = Math.floor(x / split), x0 = x % split;
+            const y1 = Math.floor(y / split), y0 = y % split;
+            const z2 = karatsuba(x1, y1);
+            const z0 = karatsuba(x0, y0);
+            const z1 = karatsuba(x1 + x0, y1 + y0) - z2 - z0;
+            return z2 * Math.pow(10, 2 * nHalf) + z1 * Math.pow(10, nHalf) + z0;
+        }
+
+        function karatsubaBigInt(x, y) {
+            if (x < 10n || y < 10n) return x * y;
+            const n = Math.max(x.toString().length, y.toString().length);
+            const nHalf = Math.floor(n / 2);
+            const split = 10n ** BigInt(nHalf);
+            const x1 = x / split, x0 = x % split;
+            const y1 = y / split, y0 = y % split;
+            const z2 = karatsubaBigInt(x1, y1);
+            const z0 = karatsubaBigInt(x0, y0);
+            const z1 = karatsubaBigInt(x1 + x0, y1 + y0) - z2 - z0;
+            return z2 * (10n ** BigInt(2 * nHalf)) + z1 * (10n ** BigInt(nHalf)) + z0;
+        }
+
+        function calculateAndVisualize() {
+            const input1 = document.getElementById('num1').value;
+            const input2 = document.getElementById('num2').value;
+            if (!input1 || !input2) { alert('Enter valid numbers'); return; }
+
+            const useBigInt = input1.length > 15 || input2.length > 15;
+            let result, time;
+
+            if (useBigInt) {
+                const start = performance.now();
+                result = karatsubaBigInt(BigInt(input1), BigInt(input2));
+                time = performance.now() - start;
+            } else {
+                const start = performance.now();
+                result = karatsuba(parseInt(input1), parseInt(input2));
+                time = performance.now() - start;
+            }
+
+            document.getElementById('calculationResult').innerHTML = `
+                <div class="result-box">
+                    <strong>Result:</strong> ${result.toLocaleString()}<br>
+                    <small>Time: ${time.toFixed(4)}ms</small>
+                </div>
+            `;
+            visualizeSteps(parseInt(input1), parseInt(input2));
+        }
+
+        function visualizeSteps(x, y) {
+            const viz = document.getElementById('stepVisualization');
+            if (x < 10 || y < 10) {
+                viz.innerHTML = `<p><strong>Base case:</strong> ${x} × ${y} = ${x * y}</p>`;
+                return;
+            }
+            const n = Math.max(x.toString().length, y.toString().length);
+            const nHalf = Math.floor(n / 2);
+            const split = Math.pow(10, nHalf);
+            const x1 = Math.floor(x / split), x0 = x % split;
+            const y1 = Math.floor(y / split), y0 = y % split;
+            const z2 = karatsuba(x1, y1), z0 = karatsuba(x0, y0);
+            const z1 = karatsuba(x1 + x0, y1 + y0) - z2 - z0;
+
+            viz.innerHTML = `
+                <p><strong>Split:</strong> x = <span class="highlight">${x1}</span> | <span class="highlight">${x0}</span>, y = <span class="highlight">${y1}</span> | <span class="highlight">${y0}</span></p>
+                <p><strong>z₂</strong> = ${x1} × ${y1} = ${z2}</p>
+                <p><strong>z₀</strong> = ${x0} × ${y0} = ${z0}</p>
+                <p><strong>z₁</strong> = (${x1}+${x0}) × (${y1}+${y0}) - ${z2} - ${z0} = ${z1}</p>
+                <p><strong>Result:</strong> ${z2}×10^${2*nHalf} + ${z1}×10^${nHalf} + ${z0} = <strong>${karatsuba(x,y).toLocaleString()}</strong></p>
+            `;
+        }
+
+        function loadExample(a, b) {
+            document.getElementById('num1').value = a;
+            document.getElementById('num2').value = b;
+            calculateAndVisualize();
+        }
+
+        // Draw Comparison Chart
+        function drawComparisonChart() {
+            const canvas = document.getElementById('comparisonChart');
+            const ctx = canvas.getContext('2d');
+            const tooltip = document.getElementById('tooltip');
+            const width = canvas.width, height = canvas.height;
+            const padding = { top: 30, right: 30, bottom: 50, left: 70 };
+            const chartW = width - padding.left - padding.right;
+            const chartH = height - padding.top - padding.bottom;
+
+            const data = [];
+            for (let n = 1; n <= 50; n++) {
+                data.push({ n, standard: Math.pow(n, 2), karatsuba: Math.pow(n, Math.log2(3)) });
+            }
+            const maxY = Math.max(...data.map(d => d.standard));
+            const scaleX = (n) => padding.left + (n / 50) * chartW;
+            const scaleY = (v) => height - padding.bottom - (v / maxY) * chartH;
+
+            const points = data.map(d => ({ x: scaleX(d.n), y1: scaleY(d.standard), y2: scaleY(d.karatsuba), data: d }));
+
+            function draw(hi = -1) {
+                ctx.clearRect(0, 0, width, height);
+                ctx.strokeStyle = '#374151'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartH / 5) * i;
+                    ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(width - padding.right, y); ctx.stroke();
+                }
+                for (let i = 0; i <= 10; i++) {
+                    const x = padding.left + (chartW / 10) * i;
+                    ctx.beginPath(); ctx.moveTo(x, padding.top); ctx.lineTo(x, height - padding.bottom); ctx.stroke();
+                }
+                ctx.setLineDash([]);
+
+                ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 3; ctx.beginPath();
+                data.forEach((d, i) => { i === 0 ? ctx.moveTo(scaleX(d.n), scaleY(d.standard)) : ctx.lineTo(scaleX(d.n), scaleY(d.standard)); });
+                ctx.stroke();
+
+                ctx.strokeStyle = '#10B981'; ctx.lineWidth = 3; ctx.beginPath();
+                data.forEach((d, i) => { i === 0 ? ctx.moveTo(scaleX(d.n), scaleY(d.karatsuba)) : ctx.lineTo(scaleX(d.n), scaleY(d.karatsuba)); });
+                ctx.stroke();
+
+                ctx.fillStyle = '#9CA3AF'; ctx.font = '12px Segoe UI'; ctx.textAlign = 'center';
+                for (let i = 0; i <= 50; i += 10) ctx.fillText(i, scaleX(i), height - padding.bottom + 20);
+                ctx.fillText('n (digits)', width / 2, height - 10);
+                ctx.textAlign = 'right';
+                for (let i = 0; i <= 5; i++) ctx.fillText(Math.round((maxY / 5) * (5 - i)), padding.left - 10, padding.top + (chartH / 5) * i + 4);
+                ctx.save(); ctx.translate(18, height / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('Operations', 0, 0); ctx.restore();
+
+                if (hi >= 0) {
+                    const p = points[hi];
+                    ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(p.x, p.y1, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#10B981'; ctx.beginPath(); ctx.arc(p.x, p.y2, 6, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+            draw();
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left;
+                let ci = -1, md = Infinity;
+                points.forEach((p, i) => { const d = Math.abs(p.x - mx); if (d < md && d < 15) { md = d; ci = i; } });
+                if (ci >= 0) {
+                    const p = points[ci];
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (p.x + 15) + 'px';
+                    tooltip.style.top = (Math.min(p.y1, p.y2) + 20) + 'px';
+                    tooltip.innerHTML = `<strong>n = ${p.data.n}</strong><br><span style="color:#EF4444;">Standard: ${Math.round(p.data.standard)}</span><br><span style="color:#10B981;">Karatsuba: ${p.data.karatsuba.toFixed(1)}</span>`;
+                    draw(ci);
+                } else { tooltip.style.display = 'none'; draw(); }
+            });
+            canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; draw(); });
+        }
+
+        window.onload = function() {
+            calculateAndVisualize();
+            drawComparisonChart();
+        };
+    </script>
+</body>
+</html>
