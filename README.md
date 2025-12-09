@@ -23,8 +23,8 @@ python src/naivemultiply.py 1234 5678
 
 To run the test cases, execute the following lines of code in your terminal:
 ```bash
-python -m tests.karatsuba_tests
-python -m tests.naivemultiply_tests
+python -m tests.test_karatsuba
+python -m tests.test_naivemultiply
 ```
 
 # Team Members
