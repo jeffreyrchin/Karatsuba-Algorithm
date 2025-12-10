@@ -1,10 +1,10 @@
 # Karatsuba Algorithm
 
-The Karatsuba Algorithm is a fast divide-and-conquer multiplication algorithm with a subquadratic time complexity. It is significantly faster than the grade-school multiplication algorithm, which runs in quadratic time. This repository contains a Python 3 implementation of the Karatsuba algorithm, as well as an implementation of the quadratic grade-school multiplication algorithm to compare performances of each on various test cases.
+The Karatsuba Algorithm is a fast divide-and-conquer multiplication algorithm with a subquadratic time complexity. It is significantly faster than the grade-school multiplication algorithm, which runs in quadratic time. This repository contains a Python 3 implementation of the Karatsuba algorithm, as well as an implementation of the quadratic grade-school multiplication algorithm to compare performances of each on various test cases. As an added feature, this repository includes an interactive web app for illustrating the Karatsuba algorithm. To use the web app, open the karatsuba_interactive_webpage.html file located in the src folder. This file can be opened in the browser without requiring any dependencies.
 
-# Usage
+# Code Usage
 
-Make sure you are in the root directory before running the following commands. To run the individual functions, execute the following lines of code in your terminal, replacing x and y with integers.
+Ensure you are in the root directory before running the following commands. To run the individual functions, execute the following lines of code in your terminal, replacing x and y with integers.
 
 Karatsuba algorithm:
 ```bash
