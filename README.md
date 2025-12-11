@@ -4,25 +4,28 @@ The Karatsuba Algorithm is a fast divide-and-conquer multiplication algorithm wi
 
 # Code Usage
 
-Ensure you are in the root directory before running the following commands. To run the individual functions, execute the following lines of code in your terminal, replacing x and y with integers.
+Ensure that you are in the root directory before running the following commands. To multiply x and y using the Karatsuba algorithm, execute the following line of code in your terminal, replacing x and y with integers.
 
-Karatsuba algorithm:
-```bash
+```
 python src/karatsuba.py x y
 ```
-Grade-school multiplication algorithm:
-```bash
+
+To multiply x and y using the grade-school multiplication algorithm, execute the following line of code in your terminal, replacing x and y with integers.
+
+```
 python src/naivemultiply.py x y
 ```
 
-Example:
-```bash
+Examples:
+
+```
 python src/karatsuba.py 1234 5678
 python src/naivemultiply.py 1234 5678
 ```
 
 To run the test cases, execute the following lines of code in your terminal:
-```bash
+
+```
 python -m tests.test_karatsuba
 python -m tests.test_naivemultiply
 ```
